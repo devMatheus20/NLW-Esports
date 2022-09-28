@@ -1,11 +1,13 @@
 import express from 'express'
-import { PrismaClient } from '@prisma/client'
+import cors from 'cors'
+import {PrismaClient} from '@prisma/client'
 import { convertHourStringToMinutes } from './utils/convert-hour-string-to-minutes'
-import { convertMinuteToHoursString } from './utils/convert-minute-to-hours-string'
+import { convertMinutesToHourString } from './utils/convert-minute-to-hour-string'
 
 
 const app = express()
 app.use(express.json())
+app.use(cors())
 const prisma = new PrismaClient()
 const port = 3333
 
@@ -37,8 +39,8 @@ app.get('/games/:id/ads', async (req, res) => {
             name: true,
             weekDays: true,
             yearsPlaying: true,
-            yoursStart: true,
-            hoursEnd: true,
+            hourStart: true,
+            hourEnd: true,
             useVoiceChannel: true,
             createdAt: true,
 
@@ -55,8 +57,8 @@ app.get('/games/:id/ads', async (req, res) => {
         return {
             ...ad,
             weekDays: ad.weekDays.split(','),
-            yoursStart: convertMinuteToHoursString(ad.yoursStart),
-            hoursEnd: convertMinuteToHoursString(ad.hoursEnd)
+            hourStart: convertMinutesToHourString(ad.hourStart),
+            hourEnd: convertMinutesToHourString(ad.hourEnd)
         }
     }))
 })
@@ -95,8 +97,8 @@ app.post('/games/:id/ads', async (req, res) => {
             weekDays: body.weekDays.join(','),
             discord: body.discord,
             yearsPlaying: body.yearsPlaying,
-            yoursStart: convertHourStringToMinutes(body.yoursStart),
-            hoursEnd: convertHourStringToMinutes(body.hoursEnd),
+            hourStart: convertHourStringToMinutes(body.yoursStart),
+            hourEnd: convertHourStringToMinutes(body.hoursEnd),
             useVoiceChannel: body.useVoiceChannel,
             createdAt: body.createdAt,
         }
